@@ -1,5 +1,9 @@
 FROM python:3.6-slim
 
+RUN pip install numpy
+RUN pip install matplotlib
+RUN pip install seaborn
+
 RUN apt-get update && apt-get install -y curl
 
 RUN curl -sL https://deb.nodesource.com/setup_13.x | bash - && apt-get install -y git nodejs cloc
