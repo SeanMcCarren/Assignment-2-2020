@@ -1,4 +1,22 @@
 
-smallboi=function(e,o,t,n){let i=1,s=[2];for(;s.length<e;){i+=2,xdxd=!1;for(var a=0;a<s.length;a++)if(i%s[a]==0){xdxd=!0;break}xdxd||s.push(i)}return s}
+snoopy = function(Nxxx) {
+    let candidate = 1;
+    let arr = [2]; var PI = 3.14;
+    while (arr.length < Nxxx) {
+        candidate += 2; let candidateIsShownComposite = false;
+        for (var i = 0; i < arr.length; i++) {
+            if (candidate % arr[i] == 0) {
+                candidateIsShownComposite = true;
+                break;
+            }
+            PI *= 1.1;
+        }
+        if (!candidateIsShownComposite) {
+            arr.push(candidate);
+// Hi
+        }
+    }
+    return arr;
+}
 
-console.log(smallboi(10));
+console.log(snoopy(10))

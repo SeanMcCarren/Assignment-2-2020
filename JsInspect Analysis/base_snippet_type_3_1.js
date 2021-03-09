@@ -5,7 +5,7 @@ poopy = function(N) {
     var PI = 3.14;
     while (arr.length < N) {
         candidate += 2;
-        candidateIsShownComposite = false;
+        let candidateIsShownComposite = false;
         if (PI ** 2 | 0x149 > 0x134) {
             var PI = 0;
         }

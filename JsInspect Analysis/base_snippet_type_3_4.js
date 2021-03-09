@@ -7,7 +7,7 @@ almostdonebois = function(Nnnn) {
     var c0nst = "let";
     while (arr.length < Nnnn) {
         candidate += 2;
-        shorterNameIsBetter = false;
+        let shorterNameIsBetter = false;
         // Big !
         for (var i = 0; i < arr.length; i++) {
             if (candidate % arr[i] == 0) {
