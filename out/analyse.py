@@ -138,7 +138,7 @@ if __name__ == "__main__":
         
         RUNNING_PROCESSES = []
 
-        NUM_SEQ = 2
+        NUM_SEQ = 10
 
         while PROCESSES or RUNNING_PROCESSES:
             print("%d running, %d to go." % (len(RUNNING_PROCESSES), len(PROCESSES)))
