@@ -11,6 +11,7 @@ import json
 import bisect
 import multiprocessing as mp
 import time
+import store
 
 
 releases = []
@@ -19,41 +20,6 @@ DIR = "../usr/jquery-data/"
 
 def release(path):
     without_dir = path[len(DIR):path.index("/", len(DIR))]
-
-class Results:
-    def __init__(self):
-        self.DONE = {}
-        try:
-            with open('results.txt', mode='r') as f:
-                lines = f.readlines()
-            for line in lines:
-                spl = line.split(",")
-                key = self.__key__(spl[0], spl[1])
-                self.DONE[key] = float(spl[2])
-        except FileNotFoundError:
-            pass
-    
-    def __key__(self, v1, v2):
-        if v1 < v2 :
-            return v1 + "," + v2
-        else :
-            return v2 + "," + v1
-
-    def add(self, ver1, ver2, metric):
-        key = self.__key__(ver1, ver2)
-        self.DONE[key] = metric
-    
-    def has(self, ver1, ver2):
-        key = self.__key__(ver1, ver2)
-        result = self.DONE.get(key, None)
-        return result != None
-
-    def save(self):
-        with open('results.txt', mode='w+') as f:
-            for key in self.DONE:
-                metric = self.DONE[key]
-                f.write(key + ',' + str(metric) + '\n')
-
 
 class Segments:
     segments = []
@@ -106,11 +72,9 @@ def CalculateCloneSegments(json_object):
     return sum(lines[path].lines() for path in lines)
 
 def RunJsInspect(result_queue, command, i_1, i_2):
-    print("\n\n RUNNING %d AND %d" % (i_1, i_2))
     result = subprocess.run(command, stdout=subprocess.PIPE, shell=True)
     string = result.stdout.decode('utf-8')
     parsed = json.loads(string)
-    print("\n\n DONE %d AND %d" % (i_1, i_2))
     Cij = CalculateCloneSegments(parsed)
     result_queue.put( (i_1, i_2, Cij ))
 
@@ -132,46 +96,52 @@ if __name__ == "__main__":
     # releases = [tmp[0]]
     # releases.append(tmp[14])
 
-    RESULTS = Results()
+    RESULTS = store.Results()
+    LOCs = store.LOCStore()
 
-    print("\nCOUNTING LINES OF JAVASCRIPT PER RELEASE\n")
-
-    for release in releases:
-        #cloc --json 1.0
-        path = DIR + release['tag'] + '/src'
-        result = subprocess.run('cloc --json "' + path + '"', stdout=subprocess.PIPE, shell=True)
-        string = result.stdout.decode('utf-8')
-        parsed = json.loads(string)
-        JSlines = parsed['JavaScript']['code'] + parsed['JavaScript']['comment'] + parsed['JavaScript']['blank'] #TODO do we need all this?
-        LOCs.append(JSlines)
-        print("File %s: %d" % (path, JSlines))
-
-
-    print("\nCOMPUTING PAIRWISE SIMILARITY\n")
-
-    QUEUE = []
     RESULT_QUEUE = mp.Queue()
-    for i_1, release_1 in enumerate(releases):
-        for i_2, release_2 in enumerate(releases[:i_1]):
-            if RESULTS.has(release_1['tag'], release_2['tag']):
-                continue
-            path_1 = DIR + release_1['tag'] + '/src'
-            path_2 = DIR + release_2['tag'] + '/src'
-            command = 'jsinspect -t ' + t_parameter + ' -r json "' + path_1 + '" "' + path_2 + '"'
-            QUEUE.append( (command, i_1, i_2) )
-    
-    PROCESSES = []
-    while QUEUE:
-        cmd, i_1, i_2 = QUEUE.pop(0)
-        p = mp.Process(target=RunJsInspect, args=(RESULT_QUEUE, cmd, i_1, i_2,))
-        PROCESSES.append(p)
-    
-    RUNNING_PROCESSES = []
-
-    NUM_SEQ = 2
-
     try:
+
+        print("\nCOUNTING LINES OF JAVASCRIPT PER RELEASE\n")
+
+        for release in releases:
+            #cloc --json 1.0
+            if LOCs.get(release['tag']) == None:
+                #cloc --json 1.0
+                path = DIR + release['tag'] + '/src'
+                result = subprocess.run('cloc --json "' + path + '"', stdout=subprocess.PIPE, shell=True)
+                string = result.stdout.decode('utf-8')
+                parsed = json.loads(string)
+                JSlines = parsed['JavaScript']['code'] + parsed['JavaScript']['comment'] + parsed['JavaScript']['blank'] #TODO do we need all this?
+                LOCs.add(release['tag'], JSlines)
+
+
+        print("\nCOMPUTING PAIRWISE SIMILARITY\n")
+
+        QUEUE = []
+        for i_1, release_1 in enumerate(releases):
+            for i_2, release_2 in enumerate(releases[:i_1]):
+                if RESULTS.has(release_1['tag'], release_2['tag']):
+                    continue
+                path_1 = DIR + release_1['tag'] + '/src'
+                path_2 = DIR + release_2['tag'] + '/src'
+                command = 'jsinspect -t ' + t_parameter + ' -r json "' + path_1 + '" "' + path_2 + '"'
+                QUEUE.append( (command, i_1, i_2) )
+        
+        np.random.shuffle(QUEUE) # To expose fatal errors more quickly, hopefully
+        
+        PROCESSES = []
+        while QUEUE:
+            cmd, i_1, i_2 = QUEUE.pop(0)
+            p = mp.Process(target=RunJsInspect, args=(RESULT_QUEUE, cmd, i_1, i_2,))
+            PROCESSES.append(p)
+        
+        RUNNING_PROCESSES = []
+
+        NUM_SEQ = 2
+
         while PROCESSES or RUNNING_PROCESSES:
+            print("%d running, %d to go." % (len(RUNNING_PROCESSES), len(PROCESSES)))
             if len(RUNNING_PROCESSES) >= NUM_SEQ or not PROCESSES:
                 p = RUNNING_PROCESSES.pop(0)
                 p.join()
@@ -184,11 +154,16 @@ if __name__ == "__main__":
     finally:
         while not RESULT_QUEUE.empty():
             (i, j, Cij ) = RESULT_QUEUE.get()
-            metric = Cij / (LOCs[i] + LOCs[j])
-            RESULTS.add(releases[i]['tag'], releases[j]['tag'], metric)
-            print("Calculated metric: %3.6f" % metric)
+            tag_i = releases[i]['tag']
+            tag_j = releases[j]['tag']
+            metric = Cij / (LOCs.get(tag_i) + LOCs.get(tag_j))
+            RESULTS.add(tag_i, tag_j, metric)
+            print("Calculated metric: %3.6f between %s and %s" % (metric, tag_i, tag_j))
         
         RESULTS.save()
+        LOCs.save()
+
+        print("\n\nSAVED metrics and LOCs\n\n")
 
     print("\nDONE AFTER %4.2f SECS" % (time.time() - START_TIME))
 
