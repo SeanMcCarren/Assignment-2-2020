@@ -1,28 +1,21 @@
 
-hi = function(poopi) {   let candidadidadidate = 1; let arrarr = [2]; while (arrarr.length < poopi) { candidadidadidate += 2; let candidadidadidateIsShownComposite = false; for (var i = 0; i < arrarr.length; i++) {
-            if 
-            (candidadidadidate % arrarr[i] == 0)
-             {
-                candidadidadidateIsShownComposite = true;
-                break;
-            }
-        }
-        /*
-        Do you have a moment to talk about our lord and savior, Elon Musk?
-        I don't because I have to do some weird stuff with code... poor code... Maybe
-        */
-        if 
-        (
-            !
-        candidadidadidateIsShownComposite
-        )
-         {
-            arrarr.push(
-                candidadidadidate
-                );
-        }
-    }
-    return  arrarr;
+getPrimes = function( N ) {
+	let arr = [ 2 ];
+	let candidate = 1;
+	while ( arr.length < N ) {
+		candidate += 2;
+		let candidateIsShownComposite = false;
+		for ( var i = 0; i < arr.length; i++ ) {
+			if ( candidate % arr[i] == 0 ) {
+				candidateIsShownComposite = true;
+				break;
+			}
+		}
+		if ( !candidateIsShownComposite ) {
+			arr.push( candidate );
+		}
+	}
+	return arr;
 }
 
-console.log(hi(10))
+console.log( getPrimes(10) );

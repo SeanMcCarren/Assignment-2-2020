@@ -1,22 +1,22 @@
 
-snoopy = function(Nxxx) {
-    let candidate = 1;
-    let arr = [2]; var PI = 3.14;
-    while (arr.length < Nxxx) {
-        candidate += 2; let candidateIsShownComposite = false;
-        for (var i = 0; i < arr.length; i++) {
-            if (candidate % arr[i] == 0) {
-                candidateIsShownComposite = true;
-                break;
-            }
-            PI *= 1.1;
-        }
-        if (!candidateIsShownComposite) {
-            arr.push(candidate);
-// Hi
-        }
-    }
-    return arr;
+getPrimes = function( N, X ) {
+	let candidate = 1;
+	let arr = [ 2 ];
+	let pi = 3.14
+	while ( arr.length < N ) {
+		candidate += 2;
+		let candidateIsShownComposite = false;
+		for ( var i = 0; i < arr.length; i++ ) {
+			if ( candidate % arr[i] == 0 ) {
+				candidateIsShownComposite = true;
+				break;
+			}
+		}
+		if ( !candidateIsShownComposite ) {
+			arr.push( candidate );
+		}
+	}
+	return arr;
 }
 
-console.log(snoopy(10))
+console.log( getPrimes(10, 3) );
