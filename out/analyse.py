@@ -125,7 +125,7 @@ if __name__ == "__main__":
                     continue
                 path_1 = DIR + release_1['tag'] + '/src'
                 path_2 = DIR + release_2['tag'] + '/src'
-                command = 'jsinspect -t ' + t_parameter + ' -r json "' + path_1 + '" "' + path_2 + '"'
+                command = 'jsinspect -t ' + t_parameter + ' -r json --truncate 1 "' + path_1 + '" "' + path_2 + '"'
                 QUEUE.append( (command, i_1, i_2) )
         
         np.random.shuffle(QUEUE) # To expose fatal errors more quickly, hopefully
@@ -150,6 +150,8 @@ if __name__ == "__main__":
                 p.start()
                 RUNNING_PROCESSES.append(p)
     except Exception as e:
+        if isinstance(e, json.decoder.JSONDecodeError):
+            print("\n\nDECODE ERROR")
         raise e
     finally:
         while not RESULT_QUEUE.empty():
