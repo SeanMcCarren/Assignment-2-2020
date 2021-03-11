@@ -12,11 +12,28 @@ import bisect
 import multiprocessing as mp
 import time
 import store
+import shutil
 
 
 releases = []
 LOCs = []
 DIR = "../usr/jquery-data/"
+
+def cleanDir(path):
+    print("Cleaning %s" % path)
+    if not (len(path) == 0 or path[-1] == '/'):
+        raise ValueError('%s is not a valid path' % path)
+    for root, dirs, files in os.walk(path):
+        for name in files:
+            if (not name.endswith(".js")) or (name.endswith(".min.js")):
+                assert os.path.exists(path + name)
+                os.remove(path + name)
+        for directory in dirs:
+            if directory in ['dist', 'test', 'build']:
+                assert os.path.exists(path + directory)
+                shutil.rmtree(path + directory)
+            else:
+                cleanDir(path + directory + '/')
 
 def release(path):
     without_dir = path[len(DIR):path.index("/", len(DIR))]
@@ -101,6 +118,10 @@ if __name__ == "__main__":
 
     RESULT_QUEUE = mp.Queue()
     try:
+        print("\nCLEANING CODE\n")
+        
+        for release in releases:
+            cleanDir(DIR[2:] + release['tag'] + '/src/')
 
         print("\nCOUNTING LINES OF JAVASCRIPT PER RELEASE\n")
 
