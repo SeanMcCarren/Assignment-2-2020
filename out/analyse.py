@@ -98,7 +98,8 @@ def RunJsInspect(result_queue, command, i_1, i_2):
 
 if __name__ == "__main__":
     START_TIME = time.time()
-    assert len(sys.argv) > 1
+    if (len(sys.argv) <= 1):
+        raise ValueError("Not enough arguments")
     t_parameter = str(sys.argv[1])
 
     with open(DIR + 'jquery_releases.csv', mode='r') as csv_file:
