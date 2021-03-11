@@ -1,25 +1,21 @@
-getPrimes = function(N) {
-    // Classic prime seive
 
-    // Initialization
-    let candidate = 1; // Candidate prime
-    let arr = [2]; // Array of primes
-    while (arr.length < N) {
-        candidate += 2;
-        let candidateIsShownComposite = false; // Becomes TRUE if we know candidate is not prime
-        for (var i = 0; i < arr.length; i++) {
-            // Assume arr correctly contains all primes up until candidate. Then if candidate is divisible by any of these primes, candidate is not prime
-            if (candidate % arr[i] == 0) {
-                candidateIsShownComposite = true;
-                break;
-            }
-        }
-        if (!candidateIsShownComposite) {
-            arr.push(candidate);
-        }
-    }
-    // Return the array
-    return arr;
+getPrimes = function( N ) {
+let candidate = 1;
+let arr = [ 2 ];
+while ( arr.length < N ) {
+candidate += 2;
+let candidateIsShownComposite = false;
+for ( var i = 0; i < arr.length; i++ ) {
+if ( candidate % arr[i] == 0 ) {
+candidateIsShownComposite = true;
+break;
+}
+}
+if ( !candidateIsShownComposite ) {
+arr.push( candidate );
+}
+}
+return arr;
 }
 
-console.log(getPrimes(10))
+console.log( getPrimes(10) );
