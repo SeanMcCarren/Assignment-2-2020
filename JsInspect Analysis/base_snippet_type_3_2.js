@@ -2,7 +2,6 @@
 getPrimes = function( N, X ) {
 	let candidate = 1;
 	let arr = [ 2 ];
-	let pi = 3.14
 	while ( arr.length < N ) {
 		candidate += 2;
 		let candidateIsShownComposite = false;
