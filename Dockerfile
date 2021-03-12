@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y curl
 
 RUN curl -sL https://deb.nodesource.com/setup_13.x | bash - && apt-get install -y git nodejs cloc
 
-WORKDIR /usr/jquery-data
+WORKDIR cd
 
 COPY prep.py .
 
@@ -52,8 +52,9 @@ we need this for visualizing later. All storage is done though store.py\n\
 \n\
 To reset storage, delete results.txt or LOCs.txt\n\
 \n\
-Visualizing is intended to be done outside the container, in a python notebook.\n\
+Visualizing can be done outside the container, in a python notebook.\n\
 Using store.py, the computed data can be easily imported \n\
+Visualizing can also be done inside the container by running visualize.py. \n\
 \n\
 To start computing, run: python analyze.py [threshold], where threshold is\n\
 the JsInspect node threshold that dictates AST similarity\n"\
