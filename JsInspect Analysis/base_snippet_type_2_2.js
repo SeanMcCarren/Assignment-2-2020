@@ -1,21 +1,21 @@
 
 getPrimes = function( N ) {
-	let candidate = 1;
-	let a = [ 2 ];
-	while ( a.length < N ) {
-		candidate += 2;
+	let c = 1;
+	let arr = [ 2 ];
+	while ( arr.length < N ) {
+		c += 2;
 		let candidateIsShownComposite = false;
-		for ( var i = 0; i < a.length; i++ ) {
-			if ( candidate % a[i] == 0 ) {
+		for ( var i = 0; i < arr.length; i++ ) {
+			if ( c % arr[i] == 0 ) {
 				candidateIsShownComposite = true;
 				break;
 			}
 		}
 		if ( !candidateIsShownComposite ) {
-			a.push( candidate );
+			arr.push( c );
 		}
 	}
-	return a;
+	return arr;
 }
 
 console.log( getPrimes(10) );

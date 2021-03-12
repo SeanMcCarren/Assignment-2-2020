@@ -1,5 +1,5 @@
 
-getPrimes = function( N ) {
+getPrimesSieve = function( N ) {
 	let candidate = 1;
 	let arr = [ 2 ];
 	while ( arr.length < N ) {
@@ -18,4 +18,4 @@ getPrimes = function( N ) {
 	return arr;
 }
 
-console.log( getPrimes(10) );
+console.log( getPrimesSieve(10) );
