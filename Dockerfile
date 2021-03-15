@@ -45,7 +45,7 @@ RUN echo '[ ! -z "$TERM" -a -r /etc/motd ] && cat /etc/issue && cat /etc/motd' \
 By Sean McCarren and Maurice Wimmer\n\
 \n\
 You are currently in /out, where all our scripts and storage resides\n\
-From here, run analyze.py to perform the computations. This is a lengthy\n\
+From here, run analyse.py to perform the computations. This is a lengthy\n\
 computation, hence we store intermediate results. Parallel processing is\n\
 used, so more CPUs are beneficial. Additionally, we store the LOC, as\n\
 we need this for visualizing later. All storage is done though store.py\n\
@@ -55,8 +55,9 @@ To reset storage, delete results.txt or LOCs.txt\n\
 Visualizing can be done outside the container, in a python notebook.\n\
 Using store.py, the computed data can be easily imported \n\
 Visualizing can also be done inside the container by running visualize.py. \n\
+In that case, store will be used to generate the image in /out \n\
 \n\
-To start computing, run: python analyze.py [threshold], where threshold is\n\
+To start computing, run: python analyse.py [threshold], where threshold is\n\
 the JsInspect node threshold that dictates AST similarity\n"\
     > /etc/motd
 
